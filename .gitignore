@@ -1,0 +1,26 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# API Keys (keep these secret!)
+apikeys.properties
+secrets.properties
+google-services.json
+
+# Gradle wrapper jar (optional - some include it, some don't)
+# gradle/wrapper/gradle-wrapper.jar
+
+# HelloWorld folder (not part of ShopperAI project)
+/HelloWorld
