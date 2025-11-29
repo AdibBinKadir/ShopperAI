@@ -9,27 +9,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-
-data class ChatMessage(
-    val text: String,
-    val isUser: Boolean
-)
+import com.example.democse3310.data.ChatMessage
+import com.example.democse3310.viewmodel.AiAssistantViewModel
 
 @Composable
-fun AiAssistantScreen(navController: NavController) {
+fun AiAssistantScreen(navController: NavController, viewModel: AiAssistantViewModel = viewModel()) {
+    val messages by viewModel.messages.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var messageInput by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf<ChatMessage>() }
     val listState = rememberLazyListState()
 
-    // Welcome message per SRA section 4.3
-    LaunchedEffect(Unit) {
-        messages.add(
-            ChatMessage(
-                "Hello! I'm your ShopperAI assistant. I can help you find products, compare prices, and answer questions about your shopping experience. What are you looking for today?",
-                isUser = false
-            )
-        )
+    // Auto-scroll to bottom when new messages arrive
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
     }
 
     Column(
@@ -44,8 +40,8 @@ fun AiAssistantScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("AI Assistant", style = MaterialTheme.typography.headlineMedium)
-                Text("Chat about your shopping needs", style = MaterialTheme.typography.bodySmall)
+                Text("AI Shopping Assistant", style = MaterialTheme.typography.headlineMedium)
+                Text("Powered by Gemini", style = MaterialTheme.typography.bodySmall)
             }
             TextButton(onClick = { navController.popBackStack() }) {
                 Text("Back")
@@ -56,7 +52,7 @@ fun AiAssistantScreen(navController: NavController) {
         Divider()
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Chat messages - history recorded per SRA requirement
+        // Chat messages
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -66,6 +62,19 @@ fun AiAssistantScreen(navController: NavController) {
         ) {
             items(messages) { message ->
                 ChatMessageBubble(message)
+            }
+            
+            if (isLoading) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Thinking...", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
         }
 
@@ -81,32 +90,19 @@ fun AiAssistantScreen(navController: NavController) {
                 value = messageInput,
                 onValueChange = { messageInput = it },
                 label = { Text("Ask me anything...") },
+                placeholder = { Text("e.g., Find me wireless headphones under $50") },
                 modifier = Modifier.weight(1f),
                 maxLines = 3
             )
 
             Button(
                 onClick = {
-                    if (messageInput.isNotBlank()) {
-                        // Add user message
-                        messages.add(ChatMessage(messageInput, isUser = true))
-                        
-                        // TODO: Call Python API / Gemini LLM backend per SRA section 2.2 Objective 4
-                        // Placeholder response for now
-                        val response = when {
-                            messageInput.contains("price", ignoreCase = true) -> 
-                                "I can help you compare prices across multiple vendors. Would you like to search for a specific product?"
-                            messageInput.contains("search", ignoreCase = true) -> 
-                                "You can search using text, upload an image, or describe what you're looking for. Which method would you prefer?"
-                            else -> 
-                                "I understand you're looking for: \"$messageInput\". Once the backend API is connected, I'll provide personalized recommendations based on your query."
-                        }
-                        
-                        messages.add(ChatMessage(response, isUser = false))
+                    if (messageInput.isNotBlank() && !isLoading) {
+                        viewModel.sendMessage(messageInput)
                         messageInput = ""
                     }
                 },
-                enabled = messageInput.isNotBlank()
+                enabled = messageInput.isNotBlank() && !isLoading
             ) {
                 Text("Send")
             }
@@ -137,7 +133,12 @@ fun ChatMessageBubble(message: ChatMessage) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = message.text,
+                    text = message.text
+                        .replace("**", "")
+                        .replace("*", "")
+                        .replace("###", "")
+                        .replace("##", "")
+                        .replace("#", ""),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

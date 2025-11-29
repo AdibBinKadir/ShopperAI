@@ -3,12 +3,19 @@ package com.example.democse3310
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.democse3310.data.User
+import com.example.democse3310.repository.UserRepository
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
@@ -17,8 +24,7 @@ fun RegistrationScreen(navController: NavController) {
     var phoneNumber by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var securityQuestion by remember { mutableStateOf("") }
-    var securityAnswer by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
     Column(
@@ -69,23 +75,15 @@ fun RegistrationScreen(navController: NavController) {
             value = password, 
             onValueChange = { password = it }, 
             label = { Text("Password (8+ chars, 1 uppercase, 1 number)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        OutlinedTextField(
-            value = securityQuestion, 
-            onValueChange = { securityQuestion = it }, 
-            label = { Text("Security Question") },
-            placeholder = { Text("e.g., What city were you born in?") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        OutlinedTextField(
-            value = securityAnswer, 
-            onValueChange = { securityAnswer = it }, 
-            label = { Text("Security Answer") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -105,13 +103,18 @@ fun RegistrationScreen(navController: NavController) {
                     userId.length < 8 -> errorMessage = "User ID must be at least 8 characters"
                     password.length < 8 || !password.any { it.isUpperCase() } || !password.any { it.isDigit() } -> 
                         errorMessage = "Password must be 8+ chars with 1 uppercase and 1 number"
-                    securityQuestion.isBlank() -> errorMessage = "Security question is required"
-                    securityAnswer.isBlank() -> errorMessage = "Security answer is required"
+                    UserRepository.userExists(userId, email) -> {
+                        errorMessage = "User ID or Email already exists"
+                    }
                     else -> {
-                        errorMessage = ""
-                        // TODO: Save to database
-                        navController.navigate("login") { 
-                            popUpTo("registration") { inclusive = true } 
+                        val user = User(fullName, email, phoneNumber, userId, password)
+                        if (UserRepository.registerUser(user)) {
+                            errorMessage = ""
+                            navController.navigate("login") { 
+                                popUpTo("registration") { inclusive = true } 
+                            }
+                        } else {
+                            errorMessage = "Registration failed. Please try again."
                         }
                     }
                 }
@@ -125,8 +128,6 @@ fun RegistrationScreen(navController: NavController) {
                 phoneNumber = ""
                 userId = ""
                 password = ""
-                securityQuestion = ""
-                securityAnswer = ""
                 errorMessage = ""
             }) {
                 Text("Cancel")

@@ -12,9 +12,9 @@ ShopperAI is an Android application that helps users find products and compare p
 
 ## Features
 
-### ✅ Implemented (Skeleton/UI)
+### ✅ Implemented
 - **User Authentication**
-  - Registration with full validation (name, email, phone, user ID, password, security Q&A)
+  - Registration with validation (name, email, phone, user ID, password)
   - Login with User ID or Email
   - Password requirements: 8+ characters, 1 uppercase, 1 number
   
@@ -25,28 +25,29 @@ ShopperAI is an Android application that helps users find products and compare p
 - **Text Search**
   - Product search interface
   - Product listing with vendor and price information
-  - Ready for backend API integration
+  - Ready for shopping API integration
   
 - **Image Search**
-  - Upload image or take photo
-  - UI ready for Computer Vision integration
+  - Upload image or take photo UI
+  - Ready for Computer Vision integration
   
 - **AI Assistant**
-  - Chat interface with message history
-  - Ready for Gemini API integration
+  - ✨ **Integrated with Gemini AI** - Real conversational shopping assistant
+  - Chat interface with full message history
+  - Powered by Google's Gemini Pro model
 
-### 🚧 To Be Implemented (Backend Integration)
-- Web scraping with BeautifulSoup (Python backend)
-- Computer Vision for image recognition
-- Gemini API for AI Assistant
+### 🚧 To Be Implemented
+- Direct integration with shopping APIs (Amazon Product API, eBay API, etc.)
+- Computer Vision for reverse image search
 - SQLite database for user data and search history
 - Price comparison across multiple vendors
 
 ## Tech Stack
 
 - **Frontend**: Kotlin, Jetpack Compose, Material Design 3
-- **Backend** (planned): Python with BeautifulSoup for web scraping
-- **AI/ML** (planned): Gemini API for conversational AI
+- **AI**: Google Gemini Pro API for conversational AI
+- **Networking**: Retrofit 2 + OkHttp for API calls
+- **Architecture**: MVVM with ViewModels and StateFlow
 - **Database** (planned): SQLite
 - **Minimum Android Version**: API 24 (Android 7.0 Nougat)
 - **Target Android Version**: API 34
@@ -81,22 +82,28 @@ app/
 - JDK 17 or higher
 - Android SDK API 34
 - Gradle 8.13+
+- **Gemini API Key** (free from [Google AI Studio](https://makersuite.google.com/app/apikey))
 
 ### Steps
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
-   cd "CSE 3310"
+   git clone https://github.com/AdibBinKadir/ShopperAI.git
+   cd ShopperAI
    ```
 
 2. **Open in Android Studio**
-   - File → Open → Select the `CSE 3310` folder
+   - File → Open → Select the `app` folder
    - Wait for Gradle sync to complete
 
 3. **Configure Gradle JDK**
    - File → Settings → Build, Execution, Deployment → Build Tools → Gradle
    - Set Gradle JDK to JDK 17 or higher (Android Studio's embedded JDK works)
+
+4. **Add Gemini API Key**
+   - See [GEMINI_SETUP.md](GEMINI_SETUP.md) for detailed instructions
+   - Quick: Add `GEMINI_API_KEY=your_key` to `local.properties`
+   - Update the API key in `AiAssistantViewModel.kt`
 
 4. **Run the app**
    - Connect an Android device or start an emulator

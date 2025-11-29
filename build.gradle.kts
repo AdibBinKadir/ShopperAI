@@ -59,12 +59,23 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
     // ViewModel and State Management
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
-    // The toxic Gemini API dependency has been surgically REMOVED.
+    // Gemini AI
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    
+    // JSON Parsing
+    implementation("org.json:json:20231013")
+    
+    // Networking for Apify
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

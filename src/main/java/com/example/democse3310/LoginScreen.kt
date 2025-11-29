@@ -1,17 +1,24 @@
 package com.example.democse3310
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.democse3310.repository.UserRepository
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var userIdOrEmail by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
     Column(
@@ -21,6 +28,7 @@ fun LoginScreen(navController: NavController) {
     ) {
         Text("ShopperAI Login", style = MaterialTheme.typography.headlineLarge)
         Text("Your AI-Powered Shopping Assistant", style = MaterialTheme.typography.bodyMedium)
+        Text("Test: testuser / Test1234", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
         Spacer(modifier = Modifier.height(32.dp))
         
         OutlinedTextField(
@@ -35,6 +43,15 @@ fun LoginScreen(navController: NavController) {
             value = password, 
             onValueChange = { password = it }, 
             label = { Text("Password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -47,13 +64,19 @@ fun LoginScreen(navController: NavController) {
         
         Button(
             onClick = { 
-                // TODO: Validate with database
-                if (userIdOrEmail.isNotBlank() && password.isNotBlank()) {
-                    navController.navigate("home") { 
-                        popUpTo("login") { inclusive = true } 
+                when {
+                    userIdOrEmail.isBlank() || password.isBlank() -> {
+                        errorMessage = "Please enter both credentials"
                     }
-                } else {
-                    errorMessage = "Incorrect username or password"
+                    UserRepository.validateCredentials(userIdOrEmail, password) -> {
+                        errorMessage = ""
+                        navController.navigate("home") { 
+                            popUpTo("login") { inclusive = true } 
+                        }
+                    }
+                    else -> {
+                        errorMessage = "Incorrect username or password"
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
