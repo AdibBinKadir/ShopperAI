@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
+import com.example.democse3310.ui.theme.Spacing
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,7 @@ fun AiAssistantScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(Spacing.md)
     ) {
         // Header
         Row(
@@ -45,16 +46,16 @@ fun AiAssistantScreen(navController: NavController) {
         ) {
             Column {
                 Text("AI Assistant", style = MaterialTheme.typography.headlineMedium)
-                Text("Chat about your shopping needs", style = MaterialTheme.typography.bodySmall)
+                Text("Chat about your shopping needs", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f))
             }
             TextButton(onClick = { navController.popBackStack() }) {
-                Text("Back")
+                Text("Back", style = MaterialTheme.typography.labelSmall)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
         Divider()
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         // Chat messages - history recorded per SRA requirement
         LazyColumn(
@@ -62,19 +63,19 @@ fun AiAssistantScreen(navController: NavController) {
                 .weight(1f)
                 .fillMaxWidth(),
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
             items(messages) { message ->
                 ChatMessageBubble(message)
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         // Input area
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             verticalAlignment = Alignment.Bottom
         ) {
             OutlinedTextField(
@@ -82,7 +83,8 @@ fun AiAssistantScreen(navController: NavController) {
                 onValueChange = { messageInput = it },
                 label = { Text("Ask me anything...") },
                 modifier = Modifier.weight(1f),
-                maxLines = 3
+                maxLines = 3,
+                shape = MaterialTheme.shapes.small
             )
 
             Button(
@@ -106,7 +108,8 @@ fun AiAssistantScreen(navController: NavController) {
                         messageInput = ""
                     }
                 },
-                enabled = messageInput.isNotBlank()
+                enabled = messageInput.isNotBlank(),
+                shape = MaterialTheme.shapes.small
             ) {
                 Text("Send")
             }
@@ -123,11 +126,12 @@ fun ChatMessageBubble(message: ChatMessage) {
         Card(
             modifier = Modifier.fillMaxWidth(0.85f),
             colors = CardDefaults.cardColors(
-                containerColor = if (message.isUser) 
-                    MaterialTheme.colorScheme.primaryContainer 
-                else 
+                containerColor = if (message.isUser)
+                    MaterialTheme.colorScheme.primaryContainer
+                else
                     MaterialTheme.colorScheme.secondaryContainer
-            )
+            ),
+            shape = MaterialTheme.shapes.large
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(

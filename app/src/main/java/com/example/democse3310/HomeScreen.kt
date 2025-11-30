@@ -1,64 +1,81 @@
 package com.example.democse3310
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.democse3310.ui.theme.Spacing
 
 @Composable
 fun HomeScreen(navController: NavController) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Welcome to ShopperAI", style = MaterialTheme.typography.headlineLarge)
-        Text("Your AI-Powered Shopping Assistant", style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(48.dp))
-        
-        // Three main search methods per SRA section 1
-        Text("Choose Your Search Method:", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Button(
-            onClick = { navController.navigate("text_search") },
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ) {
-            Text("Text-Based Search")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Button(
-            onClick = { navController.navigate("image_search") },
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ) {
-            Text("Reverse Image Search")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Button(
-            onClick = { navController.navigate("ai_assistant") },
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ) {
-            Text("AI Assistant Chat")
-        }
-        
-        Spacer(modifier = Modifier.height(48.dp))
-        
-        OutlinedButton(
-            onClick = { 
-                navController.navigate("login") { 
-                    popUpTo("home") { inclusive = true } 
-                } 
+        Spacer(modifier = Modifier.height(Spacing.xl))
+        Text("ShopperAI", style = MaterialTheme.typography.headlineLarge)
+        Spacer(modifier = Modifier.height(Spacing.sm))
+        Text("Your AI‑Powered Shopping Assistant", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f))
+        Spacer(modifier = Modifier.height(Spacing.xl))
+
+        Text("Choose a search method", style = MaterialTheme.typography.titleLarge, modifier = Modifier.align(Alignment.Start))
+        Spacer(modifier = Modifier.height(Spacing.md))
+
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            ElevatedButton(
+                onClick = { navController.navigate("text_search") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Text Search", style = MaterialTheme.typography.titleMedium)
             }
+
+            ElevatedButton(
+                onClick = { navController.navigate("image_search") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Reverse Image", style = MaterialTheme.typography.titleMedium)
+            }
+
+            ElevatedButton(
+                onClick = { navController.navigate("ai_assistant") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("AI Assistant", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Spacing.xl))
+
+        OutlinedButton(
+            onClick = {
+                navController.navigate("login") {
+                    popUpTo("home") { inclusive = true }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(48.dp),
+            shape = MaterialTheme.shapes.small
         ) {
-            Text("Logout")
+            Text("Logout", style = MaterialTheme.typography.labelSmall)
         }
     }
 }

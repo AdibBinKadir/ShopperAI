@@ -2,17 +2,13 @@ package com.example.democse3310
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.democse3310.ui.theme.*
 
 @Composable
@@ -28,42 +24,41 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppWhite)
-            .padding(horizontal = 24.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = Spacing.md),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         // --- App Title ---
         Text(
             text = "ShopperAI",
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold,
-            color = BluePrimary
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(Spacing.sm))
 
         Text(
             text = "Welcome back",
-            fontSize = 18.sp,
-            color = MediumGray
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         // --- Form Container ---
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = AppWhite),
-            elevation = CardDefaults.cardElevation(12.dp)
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .padding(22.dp),
+                    .padding(Spacing.md),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -71,48 +66,49 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email", color = MediumGray) },
+                    label = { Text("Email", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     modifier = Modifier
                         .fillMaxWidth(),
                     singleLine = true,
+                    shape = MaterialTheme.shapes.small,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = BluePrimary,
-                        unfocusedBorderColor = LightGray,
-                        cursorColor = BluePrimary
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(Spacing.md))
 
                 // PASSWORD INPUT
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password", color = MediumGray) },
+                    label = { Text("Password", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                     singleLine = true,
                     visualTransformation =
-                        if (passwordVisible) VisualTransformation.None
-                        else PasswordVisualTransformation(),
+                    if (passwordVisible) VisualTransformation.None
+                    else PasswordVisualTransformation(),
                     trailingIcon = {
                         val iconText = if (passwordVisible) "Hide" else "Show"
                         TextButton(onClick = { passwordVisible = !passwordVisible }) {
                             Text(
                                 text = iconText,
-                                color = BluePrimary,
-                                fontSize = 13.sp
+                                color = MaterialTheme.colorScheme.primary,
                             )
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
+                    shape = MaterialTheme.shapes.small,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = BluePrimary,
-                        unfocusedBorderColor = LightGray,
-                        cursorColor = BluePrimary
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(Spacing.lg))
 
                 // LOGIN BUTTON
                 Button(
@@ -120,47 +116,45 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BluePrimary
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Text(
                         text = "Log In",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = AppWhite
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(Spacing.sm))
 
                 // FORGOT PASSWORD
                 TextButton(onClick = onForgotPasswordClick) {
                     Text(
                         text = "Forgot Password?",
-                        color = BluePrimary,
-                        fontSize = 14.sp
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(Spacing.lg))
 
         // SIGN UP LINK
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "Don't have an account? ",
-                color = MediumGray,
-                fontSize = 15.sp
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f),
+                style = MaterialTheme.typography.bodyMedium
             )
             TextButton(onClick = onSignUpClick) {
                 Text(
                     text = "Sign up",
-                    color = BluePrimary,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Medium
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import com.example.democse3310.ui.theme.Spacing
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +15,7 @@ import com.example.democse3310.viewmodel.TextSearchViewModel
 
 @Composable
 fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = viewModel()) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(Spacing.md)) {
         // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -23,50 +24,51 @@ fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = vie
         ) {
             Column {
                 Text("Text Search", style = MaterialTheme.typography.headlineMedium)
-                Text("Search by product name or description", style = MaterialTheme.typography.bodySmall)
+                Text("Search by product name or description", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f))
             }
             TextButton(onClick = { navController.popBackStack() }) {
-                Text("Back")
+                Text("Back", style = MaterialTheme.typography.labelSmall)
             }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
+
+        Spacer(modifier = Modifier.height(Spacing.md))
+
         OutlinedTextField(
             value = vm.query.value,
             onValueChange = { vm.query.value = it },
             label = { Text("Search for a product") },
             placeholder = { Text("e.g., wireless headphones, laptop, running shoes") },
             modifier = Modifier.fillMaxWidth(),
-            maxLines = 3
+            maxLines = 3,
+            shape = MaterialTheme.shapes.small
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        
+        Spacer(modifier = Modifier.height(Spacing.sm))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { vm.searchProducts() }) {
-                Text("Search")
+            Button(onClick = { vm.searchProducts() }, modifier = Modifier.height(44.dp), shape = MaterialTheme.shapes.small) {
+                Text("Search", style = MaterialTheme.typography.titleMedium)
             }
-            
-            TextButton(onClick = { 
+
+            TextButton(onClick = {
                 vm.query.value = ""
                 vm.products.clear()
             }) {
-                Text("Clear")
+                Text("Clear", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        
+        Spacer(modifier = Modifier.height(Spacing.md))
+
         Text(
             "Search will use web-scraping (BeautifulSoup) per SRA section 2.2",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.md))
 
         if (vm.isLoading.value) {
             Box(
@@ -80,11 +82,11 @@ fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = vie
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No results found. Try a different search term.")
+                Text("No results found. Try a different search term.", style = MaterialTheme.typography.bodyMedium)
             }
         } else {
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
                 modifier = Modifier.weight(1f)
             ) {
                 items(vm.products) { product ->
