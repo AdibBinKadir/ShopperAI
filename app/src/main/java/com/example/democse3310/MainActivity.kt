@@ -30,7 +30,12 @@ class MainActivity : ComponentActivity() {
 private fun AppNavHost() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginScreen(navController) }
+        composable("login") {
+            LoginScreen(
+                onLoginClick = { navController.navigate("home") },
+                onSignUpClick = { navController.navigate("registration") }
+            )
+        }
         composable("registration") { RegistrationScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("text_search") { TextSearchScreen(navController) }
