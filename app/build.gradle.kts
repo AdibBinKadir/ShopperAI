@@ -64,7 +64,14 @@ dependencies {
     // ViewModel and State Management
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
-    // The toxic Gemini API dependency has been surgically REMOVED.
+    // Gemini API dependency
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+
+    // CameraX dependencies
+    implementation("androidx.camera:camera-core:1.3.1")
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
