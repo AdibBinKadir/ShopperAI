@@ -23,10 +23,8 @@ class AiAssistantViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     
-    // TODO: Replace with your actual Gemini API key
-    // Add it to local.properties as GEMINI_API_KEY=your_key_here
-    // Then access it via BuildConfig.GEMINI_API_KEY
-    private val apiKey = "AIzaSyDSInoqr9catuTB83T0iBJG4mKD5u0S18g"
+    // API key loaded from local.properties via BuildConfig
+    private val apiKey = com.example.democse3310.BuildConfig.GEMINI_API_KEY
     
     private val generativeModel = GenerativeModel(
         modelName = "gemini-2.5-flash",

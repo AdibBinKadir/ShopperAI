@@ -10,7 +10,8 @@ import java.math.BigDecimal
 
 object ProductRepository {
     
-    private val geminiApiKey = "AIzaSyDSInoqr9catuTB83T0iBJG4mKD5u0S18g"
+    // API key loaded from local.properties via BuildConfig
+    private val geminiApiKey = com.example.democse3310.BuildConfig.GEMINI_API_KEY
     
     private val generativeModel = GenerativeModel(
         modelName = "gemini-2.5-flash",
