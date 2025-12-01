@@ -2,6 +2,7 @@ plugins {
     id("com.android.application") version "8.13.1"
     id("org.jetbrains.kotlin.android") version "2.0.21"
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
 
 android {
@@ -63,6 +64,18 @@ dependencies {
 
     // ViewModel and State Management
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    // Room Database for SQLite
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // DataStore Preferences for small persistent flags
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // The toxic Gemini API dependency has been surgically REMOVED.
 

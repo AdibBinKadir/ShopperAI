@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
@@ -20,6 +22,9 @@ fun RegistrationScreen(navController: NavController) {
     var securityQuestion by remember { mutableStateOf("") }
     var securityAnswer by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -109,6 +114,10 @@ fun RegistrationScreen(navController: NavController) {
                     securityAnswer.isBlank() -> errorMessage = "Security answer is required"
                     else -> {
                         errorMessage = ""
+                        // Save user session before navigating
+                        scope.launch {
+                            com.example.democse3310.data.setCurrentUser(context, email, email)
+                        }
                         // TODO: Save to database
                         navController.navigate("login") { 
                             popUpTo("registration") { inclusive = true } 

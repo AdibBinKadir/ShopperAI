@@ -6,10 +6,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.democse3310.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -17,6 +19,9 @@ fun LoginScreen(
     onSignUpClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -112,7 +117,14 @@ fun LoginScreen(
 
                 // LOGIN BUTTON
                 Button(
-                    onClick = onLoginClick,
+                    onClick = {
+                        // Save user session before navigating
+                        scope.launch {
+                            // Use email as user ID (or generate one; for demo, use email)
+                            com.example.democse3310.data.setCurrentUser(context, email, email)
+                        }
+                        onLoginClick()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
