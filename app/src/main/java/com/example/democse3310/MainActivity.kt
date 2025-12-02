@@ -41,5 +41,6 @@ private fun AppNavHost() {
         composable("text_search") { TextSearchScreen(navController) }
         composable("image_search") { ImageSearchScreen(navController) }
         composable("ai_assistant") { AiAssistantScreen(navController) }
+        composable("budget_tracker") { BudgetTrackerScreen(navController) }
     }
 }

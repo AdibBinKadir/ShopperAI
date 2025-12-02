@@ -60,6 +60,16 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Text("AI Assistant", style = MaterialTheme.typography.titleMedium)
             }
+
+            ElevatedButton(
+                onClick = { navController.navigate("budget_tracker") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text("Budget Tracker", style = MaterialTheme.typography.titleMedium)
+            }
         }
 
         Spacer(modifier = Modifier.height(Spacing.xl))
