@@ -97,9 +97,13 @@ fun AiAssistantScreen(navController: NavController, viewModel: AiAssistantViewMo
 
             Button(
                 onClick = {
-                    if (messageInput.isNotBlank() && !isLoading) {
-                        viewModel.sendMessage(messageInput)
-                        messageInput = ""
+                    try {
+                        if (messageInput.isNotBlank() && !isLoading) {
+                            viewModel.sendMessage(messageInput)
+                            messageInput = ""
+                        }
+                    } catch (e: Throwable) {
+                        android.util.Log.e("AiAssistantScreen", "Error in send button", e)
                     }
                 },
                 enabled = messageInput.isNotBlank() && !isLoading

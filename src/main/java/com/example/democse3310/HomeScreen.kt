@@ -48,6 +48,22 @@ fun HomeScreen(navController: NavController) {
         ) {
             Text("AI Assistant Chat")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Button(
+            onClick = { navController.navigate("map") },
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ) {
+            Text("Find Nearby Stores")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Button(
+            onClick = { navController.navigate("budget_tracker") },
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ) {
+            Text("Budget Tracker")
+        }
         
         Spacer(modifier = Modifier.height(48.dp))
         

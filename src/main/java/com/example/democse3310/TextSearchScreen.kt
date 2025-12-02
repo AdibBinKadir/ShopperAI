@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,7 +19,20 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = viewModel()) {
+fun TextSearchScreen(
+    navController: NavController, 
+    vm: TextSearchViewModel = viewModel(),
+    initialQuery: String? = null
+) {
+    // Set initial query and trigger search if provided
+    LaunchedEffect(initialQuery) {
+        if (!initialQuery.isNullOrEmpty()) {
+            android.util.Log.d("TextSearchScreen", "Setting initial query: $initialQuery")
+            vm.query.value = initialQuery
+            vm.searchProducts()
+        }
+    }
+    
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // Header
         Row(
@@ -51,7 +65,14 @@ fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = vie
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(onClick = { vm.searchProducts() }) {
+            Button(onClick = { 
+                try {
+                    vm.searchProducts()
+                } catch (e: Throwable) {
+                    android.util.Log.e("TextSearchScreen", "Error in search button", e)
+                    vm.errorMessage.value = "Button Error: ${e.javaClass.simpleName} - ${e.message}"
+                }
+            }) {
                 Text("Search")
             }
             

@@ -2,8 +2,10 @@ package com.example.democse3310.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.democse3310.BuildConfig
 import com.example.democse3310.data.ChatMessage
 import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,23 +25,34 @@ class AiAssistantViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     
-    // TODO: Replace with your actual Gemini API key
-    // Add it to local.properties as GEMINI_API_KEY=your_key_here
-    // Then access it via BuildConfig.GEMINI_API_KEY
-    private val apiKey = "AIzaSyDSInoqr9catuTB83T0iBJG4mKD5u0S18g"
-    
-    private val generativeModel = GenerativeModel(
-        modelName = "gemini-2.5-flash",
-        apiKey = apiKey
-    )
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        android.util.Log.e("AiAssistant", "Uncaught exception in coroutine", throwable)
+        _messages.value = _messages.value + ChatMessage(
+            "❌ Critical Error: ${throwable.javaClass.simpleName}\n${throwable.message}\n\nThe app caught this error to prevent a crash.",
+            isUser = false
+        )
+        _isLoading.value = false
+    }
     
     fun sendMessage(userMessage: String) {
-        viewModelScope.launch {
-            // Add user message
-            _messages.value = _messages.value + ChatMessage(userMessage, isUser = true)
-            _isLoading.value = true
-            
+        // Add user message immediately
+        _messages.value = _messages.value + ChatMessage(userMessage, isUser = true)
+        _isLoading.value = true
+        
+        viewModelScope.launch(exceptionHandler) {
             try {
+                android.util.Log.d("AiAssistant", "=== Starting AI Assistant message ===")
+                android.util.Log.d("AiAssistant", "User message: $userMessage")
+                android.util.Log.d("AiAssistant", "API Key configured: ${BuildConfig.GEMINI_API_KEY.take(10)}...")
+                
+                // Initialize the model inside try-catch to catch initialization errors
+                android.util.Log.d("AiAssistant", "Initializing GenerativeModel...")
+                val generativeModel = GenerativeModel(
+                    modelName = "gemini-2.5-flash",
+                    apiKey = BuildConfig.GEMINI_API_KEY
+                )
+                android.util.Log.d("AiAssistant", "GenerativeModel initialized successfully")
+                
                 // Create shopping-focused prompt
                 val prompt = """
                     You are a helpful shopping assistant. The user is looking for product recommendations and shopping advice.
@@ -48,14 +61,34 @@ class AiAssistantViewModel : ViewModel() {
                     Provide helpful, concise advice. If they're looking for products, suggest what to search for and what features to consider.
                 """.trimIndent()
                 
+                android.util.Log.d("AiAssistant", "Sending request to Gemini API...")
                 val response = generativeModel.generateContent(prompt)
+                android.util.Log.d("AiAssistant", "Received response from Gemini API")
+                
                 val aiResponse = response.text ?: "I'm sorry, I couldn't process that. Could you try rephrasing?"
+                android.util.Log.d("AiAssistant", "Response text length: ${aiResponse.length}")
                 
                 // Add AI response
                 _messages.value = _messages.value + ChatMessage(aiResponse, isUser = false)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                android.util.Log.e("AiAssistant", "=== ERROR in AI Assistant ===")
+                android.util.Log.e("AiAssistant", "Error type: ${e.javaClass.simpleName}")
+                android.util.Log.e("AiAssistant", "Error message: ${e.message}")
+                android.util.Log.e("AiAssistant", "Stack trace:", e)
+                
+                val errorDetails = when {
+                    e.message?.contains("API key", ignoreCase = true) == true -> 
+                        "API Key Error: ${e.message}"
+                    e.message?.contains("network", ignoreCase = true) == true -> 
+                        "Network Error: Please check your internet connection. ${e.message}"
+                    e.message?.contains("timeout", ignoreCase = true) == true -> 
+                        "Timeout Error: The request took too long. ${e.message}"
+                    else -> 
+                        "Error: ${e.javaClass.simpleName} - ${e.message ?: "Unknown error occurred"}"
+                }
+                
                 _messages.value = _messages.value + ChatMessage(
-                    "Sorry, I'm having trouble connecting. Error: ${e.message}. Make sure you've added your Gemini API key!",
+                    "❌ Sorry, I encountered an error:\n\n$errorDetails\n\nPlease check your API key and internet connection.",
                     isUser = false
                 )
             } finally {

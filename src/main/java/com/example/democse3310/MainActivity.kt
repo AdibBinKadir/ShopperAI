@@ -8,9 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.democse3310.ui.theme.DemoCSE3310Theme
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +36,16 @@ private fun AppNavHost() {
         composable("registration") { RegistrationScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("text_search") { TextSearchScreen(navController) }
+        composable(
+            route = "text_search/{query}",
+            arguments = listOf(navArgument("query") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            TextSearchScreen(navController, initialQuery = query)
+        }
         composable("image_search") { ImageSearchScreen(navController) }
         composable("ai_assistant") { AiAssistantScreen(navController) }
+        composable("budget_tracker") { BudgetTrackerScreen(navController) }
+        composable("map") { MapScreen() }
     }
 }
