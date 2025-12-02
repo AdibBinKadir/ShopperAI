@@ -6,6 +6,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 object ProductRepository {
@@ -109,6 +117,74 @@ object ProductRepository {
             "Target" -> "https://www.target.com/s?searchTerm=$encodedQuery"
             "Best Buy" -> "https://www.bestbuy.com/site/searchpage.jsp?st=$encodedQuery"
             else -> "https://www.google.com/search?q=$encodedQuery"
+        }
+    }
+
+    // Send a base64 image to the local backend and convert returned matches into Product objects
+    suspend fun searchProductsByImage(imageBase64: String): List<Product> = withContext(Dispatchers.IO) {
+        try {
+            // Build Retrofit pointing at the configured backend URL (set in local.properties -> BACKEND_API_URL)
+            val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
+            val client = OkHttpClient.Builder().addInterceptor(logging).build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(com.example.democse3310.BuildConfig.BACKEND_URL.ifEmpty { "http://127.0.0.1:8000" })
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            interface ReverseImageService {
+                @POST("reverse-image")
+                suspend fun reverseImage(@Body body: Map<String, String>): ReverseImageResponse
+            }
+
+            data class Match(
+                val name: String?,
+                val price: String?,
+                val image: String?,
+                val url: String?,
+                @SerializedName("source") val source: String?,
+                val vendor: String?
+            )
+
+            data class ReverseImageResponse(val matches: List<Match>?)
+
+            val service = retrofit.create(ReverseImageService::class.java)
+            val resp = service.reverseImage(mapOf("image_base64" to imageBase64))
+            val matches = resp.matches ?: emptyList()
+
+            val products = mutableListOf<Product>()
+            for ((i, item) in matches.withIndex()) {
+                try {
+                    val name = item.name ?: "Unknown Product"
+                    val priceRaw = item.price ?: "0"
+                    val vendor = item.vendor ?: item.source ?: "Backend"
+                    val imageUrl = item.image ?: ""
+                    val productUrl = item.url ?: ""
+
+                    val priceClean = priceRaw.replace("$", "").replace(Regex("[^0-9.]"), "")
+                    val price = try { priceClean.toDouble() } catch (e: Exception) { 0.0 }
+
+                    products.add(
+                        Product(
+                            id = "backend_${i}",
+                            name = name,
+                            description = vendor,
+                            price = java.math.BigDecimal.valueOf(price),
+                            vendor = vendor,
+                            imageUrl = imageUrl,
+                            productUrl = productUrl
+                        )
+                    )
+                } catch (e: Exception) {
+                    android.util.Log.e("ProductRepo", "Error parsing match item: ${e.message}")
+                }
+            }
+
+            products
+        } catch (e: Exception) {
+            android.util.Log.e("ProductRepo", "searchProductsByImage failed: ${e.message}")
+            emptyList()
         }
     }
 }

@@ -20,18 +20,31 @@ android {
             useSupportLibrary = true
         }
         
-        // Load API keys from local.properties
-        val properties = org.jetbrains.kotlin.konan.properties.Properties()
+        // Load API keys from local.properties (if present). We support both
+        // `GEMINI_API_KEY` and `geminiApiKey` property names for convenience.
+        val properties = java.util.Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             properties.load(localPropertiesFile.inputStream())
         }
-        
-        buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("geminiApiKey", "")}\"")
+        // Resolve the gemini key: prefer explicit GEMINI_API_KEY, then camelCase,
+        // then fall back to environment variable if present.
+        val geminiKey: String = properties.getProperty("GEMINI_API_KEY", properties.getProperty("geminiApiKey", System.getenv("GEMINI_API_KEY") ?: ""))
+        // Backend URL for local/dev testing. Set BACKEND_API_URL in local.properties
+        val backendUrl: String = properties.getProperty("BACKEND_API_URL", "http://127.0.0.1:8000")
     }
 
     buildTypes {
+        debug {
+            // Expose the GEMINI key and backend URL only in debug builds for local development.
+            buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+            buildConfigField("String", "BACKEND_URL", "\"$backendUrl\"")
+        }
+
         release {
+            // Do not embed the key in release builds.
+            buildConfigField("String", "GEMINI_API_KEY", "\"\"")
+            buildConfigField("String", "BACKEND_URL", "\"\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -83,6 +96,9 @@ dependencies {
     
     // Networking for Apify
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
