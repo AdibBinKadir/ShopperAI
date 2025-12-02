@@ -167,8 +167,7 @@ fun ImageSearchScreen(navController: NavController, viewModel: ImageSearchViewMo
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(product.name, style = MaterialTheme.typography.titleMedium)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(product.description, style = MaterialTheme.typography.bodyMedium)
+
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text("Price: $${product.price}", style = MaterialTheme.typography.bodyLarge)
                             }

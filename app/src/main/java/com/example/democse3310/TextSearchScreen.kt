@@ -10,10 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import com.example.democse3310.viewmodel.TextSearchViewModel
 
 @Composable
 fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = viewModel()) {
+    val uriHandler = LocalUriHandler.current
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // Header
         Row(
@@ -88,7 +91,7 @@ fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = vie
                 modifier = Modifier.weight(1f)
             ) {
                 items(vm.products) { product ->
-                    ProductListItem(product)
+                    ProductListItem(product, uriHandler = uriHandler)
                 }
             }
         }
@@ -96,19 +99,14 @@ fun TextSearchScreen(navController: NavController, vm: TextSearchViewModel = vie
 }
 
 @Composable
-fun ProductListItem(product: com.example.democse3310.data.Product) {
+fun ProductListItem(product: com.example.democse3310.data.Product, uriHandler: UriHandler) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(product.name, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                product.description, 
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2
-            )
+
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -116,15 +114,15 @@ fun ProductListItem(product: com.example.democse3310.data.Product) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Vendor: ${product.vendor}", style = MaterialTheme.typography.bodyMedium)
+
                     Text(
-                        "\$${product.price}", 
+                        product.price, 
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Button(onClick = { 
-                    // TODO: Navigate to product URL
+                    uriHandler.openUri(product.productUrl)
                 }) {
                     Text("View")
                 }
